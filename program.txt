@@ -1,0 +1,5 @@
+MOV R7, #6
+:LOOP 	ADDNE R1, R1, #3
+	CMP R7, R1
+	BLT LOOP
+HLT
