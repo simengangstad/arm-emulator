@@ -32,6 +32,8 @@ def logWithOptionOfBreaking(message, breakLine):
 # 3 - MOV <CONDITION> Arg1, Arg2                - Moves the value of Arg2 to Arg1
 # 4 - CMP <CONDITION> Arg1, Arg2                - Compares Arg2 to Arg1
 # 5 - BRA <CONDITION> Arg1                      - Sets the program counter to Arg1
+# 6 - LDR <CONDITION> Arg1, [Arg2]              - Load the value at the memory address Arg2 into Arg1
+# 7 - STR <CONDITION> Arg1, [Arg2]              - Store the value of Arg1 into the memory address Arg2
 #
 #
 # Labels
@@ -52,7 +54,9 @@ Specification = [
     "ADD",
     "SUB",
     "CMP",
-    "B"
+    "B",
+    "LDR",
+    "STR"
 ];
 
 Conditions = [
@@ -139,21 +143,21 @@ def isValidMemoryAddress(value):
 
         print(address);
 
-        try:
+        return isValidRegister(address);
 
-            number = int (address);
+    return False;
 
-            if (0 <= number and number < AmountOfMemoryLocations):
+def setMemoryLocation(location, value):
 
-                return True;
+    if (0 <= location and location <= AmountOfMemoryLocations):
 
-            else:
+        memory[location] = value;
 
-                return False;
+        return True;
 
-        except ValueError:
+    else:
 
-            return false;
+        return False;
 
 def validateArgumentsLength(arguments, length):
 
@@ -177,10 +181,6 @@ def retrieveValue(argument):
 
         value = int(argument[1:]);
 
-    elif (isValidMemoryAddress(argument)):
-
-        value = memory[int(argument[1:-1])];
-
     return value;
 
 
@@ -189,6 +189,8 @@ def printError(message, pc):
     log("Error at PC: " + str(pc) + " - " + message);
 
     status = False;
+
+    log("CPU crashed!");
 
 # ---------- START OF MAIN PROGRAM -------------
 
@@ -217,6 +219,10 @@ settingsList = settingsFile.read().split("\n");
 settings = {};
 
 for line in settingsList:
+
+    if (line == ""):
+
+        continue;
 
     setting = line.split("=")[0];
     value = line.split("=")[1];
@@ -447,13 +453,11 @@ while (status):
 
                 registers[Registers.index(arguments[0])] = value;
 
-            elif (isValidMemoryAddress(arguments[0])):
-
-                memory[int(arguments[0][1:-1])] = value;
-
             else:
 
                 printError("Not valid arguments for instruction.", pc - 1);
+
+                break;
 
     elif (instruction == "ADD"):
 
@@ -473,10 +477,6 @@ while (status):
             if (isValidRegister(arguments[0])):
 
                 registers[Registers.index(arguments[0])] = value1 + value2;
-
-            elif (isValidMemoryAddress(arguments[0])):
-
-                memory[int(arguments[0][1:-1])] = value1 + value2;
 
             else:
 
@@ -502,10 +502,6 @@ while (status):
             if (isValidRegister(arguments[0])):
 
                 registers[Registers.index(arguments[0])] = value1 - value2;
-
-            elif (isValidMemoryAddress(arguments[0])):
-
-                memory[int(arguments[0][1:-1])] = value1 - value2;
 
             else:
 
@@ -546,6 +542,38 @@ while (status):
         else:
 
             pc = value;
+
+    elif (instruction == "LDR"):
+
+        validateArgumentsLength(arguments, 2);
+
+        if (isValidRegister(arguments[0]) and isValidMemoryAddress(arguments[1])):
+
+            registers[Registers.index(arguments[0])] = memory[registers[Registers.index(arguments[1][1:-1])]];
+
+        else:
+
+            printError("Not valid argument for instruction", pc - 1);
+
+            break;
+
+    elif (instruction == "STR"):
+
+        validateArgumentsLength(arguments, 2);
+
+        if (isValidRegister(arguments[0]) and isValidMemoryAddress(arguments[1])):
+
+            if (not setMemoryLocation(registers[Registers.index(arguments[1][1:-1])], registers[Registers.index(arguments[0])])):
+
+                printError("Not a valid memory address, has to be between 0 and " + AmountOfMemoryLocations + ".");
+
+                break;
+
+        else:
+
+            printError("Not valid argument for instruction", pc - 1);
+
+            break;
 
     elif (instruction == "HLT"):
 
