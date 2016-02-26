@@ -1,1 +1,2 @@
 displayLabels=true
+displayMemory=true

@@ -1,18 +1,25 @@
-import tkinter
-
-# TODO:
-# Memory in a file (?)
-
 # Log output
 output = "";
 
 def log(message):
 
+    logWithOptionOfBreaking(message, True);
+
+def logWithOptionOfBreaking(message, breakLine):
+
     global output
 
-    print(message);
+    if (breakLine):
 
-    output += message + "\n";
+        print(message);
+
+        output += message + "\n";
+
+    else:
+
+        print(message, end="");
+
+        output += message;
 
 # Specification
 #
@@ -31,6 +38,12 @@ def log(message):
 #
 # Labels are defined by : and the label name. An example would be :end for the label end. This
 # points to the line after the label.
+#
+#
+# Memory
+#
+# Given [address] refers to the value at the given memory address.
+
 
 Specification = [
 
@@ -73,6 +86,11 @@ statusNegative = False;
 statusZero = False;
 
 
+# Memory
+
+AmountOfMemoryLocations = 32;
+memory = [0]*AmountOfMemoryLocations;
+
 
 # Helper functions
 
@@ -113,6 +131,30 @@ def isValidValue(value):
 
         return False;
 
+def isValidMemoryAddress(value):
+
+    if (value.startswith("[") and value.endswith("]")):
+
+        address = value[1:-1];
+
+        print(address);
+
+        try:
+
+            number = int (address);
+
+            if (0 <= number and number < AmountOfMemoryLocations):
+
+                return True;
+
+            else:
+
+                return False;
+
+        except ValueError:
+
+            return false;
+
 def validateArgumentsLength(arguments, length):
 
     if (len(arguments) != length):
@@ -134,6 +176,10 @@ def retrieveValue(argument):
     elif (isValidValue(argument)):
 
         value = int(argument[1:]);
+
+    elif (isValidMemoryAddress(argument)):
+
+        value = memory[int(argument[1:-1])];
 
     return value;
 
@@ -161,6 +207,7 @@ except FileNotFoundError:
     settingsFile = open("settings.txt", "w+");
 
     settingsFile.write("displayLabels=true");
+    settingsFile.write("displayMemory=true");
 
     settingsFile.seek(0);
 
@@ -179,6 +226,7 @@ for line in settingsList:
 settingsFile.close();
 
 displayLabels = "displayLabels" in settings and settings["displayLabels"] == "true";
+displayMemory = "displayMemory" in settings and settings["displayMemory"] == "true";
 
 file = None;
 
@@ -246,12 +294,12 @@ log("\n\n");
 # that part of the copy of the line and trims, removes spaces and splits up
 # the rest of the copy of the line.
 
-#window = tkinter.Tk();
-
 status = True;
 cycle = 1;
 
 while (status):
+
+    log("\n\n")
 
     # DISPLAY LABELS
 
@@ -264,6 +312,19 @@ while (status):
             log(str(labels[label]) + ": " + label);
 
         log("\n");
+
+
+    if (displayMemory):
+
+        log("----- MEMORY ------");
+
+        for y in range(0, int(AmountOfMemoryLocations / 4), 1):
+
+            for x in range(y, y + int(AmountOfMemoryLocations), int(AmountOfMemoryLocations / 4)):
+
+                logWithOptionOfBreaking(str(x) + ":" + str(memory[x]) + "\t", False);
+
+            log("\n")
 
 
     # FETCH
@@ -372,73 +433,85 @@ while (status):
 
         validateArgumentsLength(arguments, 2);
 
-        if (isValidRegister(arguments[0])):
+        value = retrieveValue(arguments[1]);
 
-            value = retrieveValue(arguments[1]);
+        if (value == None):
 
-            if (value == None):
+            printError("Not valid argument for instruction", pc - 1)
 
-                printError("Not valid argument for instruction", pc - 1)
-
-                break;
-
-            else:
-
-                registers[Registers.index(arguments[0])] = value;
+            break;
 
         else:
 
-            printError("Not valid arguments for instruction.", pc - 1);
+            if (isValidRegister(arguments[0])):
+
+                registers[Registers.index(arguments[0])] = value;
+
+            elif (isValidMemoryAddress(arguments[0])):
+
+                memory[int(arguments[0][1:-1])] = value;
+
+            else:
+
+                printError("Not valid arguments for instruction.", pc - 1);
 
     elif (instruction == "ADD"):
 
         validateArgumentsLength(arguments, 3);
 
-        if (isValidRegister(arguments[0])):
+        value1 = retrieveValue(arguments[1]);
+        value2 = retrieveValue(arguments[2]);
 
-            value1 = retrieveValue(arguments[1]);
-            value2 = retrieveValue(arguments[2]);
+        if (value1 == None or value2 == None):
 
-            if (value1 == None or value2 == None):
+            printError("Not valid argument for instruction", pc - 1)
 
-                printError("Not valid argument for instruction", pc - 1)
-
-                break;
-
-            else:
-
-                registers[Registers.index(arguments[0])] = value1 + value2;
+            break;
 
         else:
 
-            printError("Not valid arguments for instruction.", pc - 1);
+            if (isValidRegister(arguments[0])):
 
-            break;
+                registers[Registers.index(arguments[0])] = value1 + value2;
+
+            elif (isValidMemoryAddress(arguments[0])):
+
+                memory[int(arguments[0][1:-1])] = value1 + value2;
+
+            else:
+
+                printError("Not valid arguments for instruction.", pc - 1);
+
+                break;
 
     elif (instruction == "SUB"):
 
         validateArgumentsLength(arguments, 3);
 
-        if (isValidRegister(arguments[0])):
+        value1 = retrieveValue(arguments[1]);
+        value2 = retrieveValue(arguments[2]);
 
-            value1 = retrieveValue(arguments[1]);
-            value2 = retrieveValue(arguments[2]);
+        if (value1 == None or value2 == None):
 
-            if (value1 == None or value2 == None):
+            printError("Not valid argument for instruction", pc - 1)
 
-                printError("Not valid argument for instruction", pc - 1);
-
-                break;
-
-            else:
-
-                registers[Registers.index(arguments[0])] = value1 - value2;
+            break;
 
         else:
 
-            printError("Not valid arguments for instruction.", pc - 1);
+            if (isValidRegister(arguments[0])):
 
-            break;
+                registers[Registers.index(arguments[0])] = value1 - value2;
+
+            elif (isValidMemoryAddress(arguments[0])):
+
+                memory[int(arguments[0][1:-1])] = value1 - value2;
+
+            else:
+
+                printError("Not valid arguments for instruction.", pc - 1);
+
+                break;
 
     elif (instruction == "CMP"):
 
