@@ -1,6 +1,6 @@
 # ARM assembler written in pyhton
 
-## SPECIFICATION
+## Specification
 
 8 registers (Rn). 
 32 words of RAM.
@@ -10,24 +10,24 @@ fulfilled in order for the instruction to execute.
 
 ### Instructions
 
-0 - HLT <CONDITION>                           - Halts the program
-1 - ADD <CONDITION> Arg1, Arg2, Arg3          - Adds the value of Arg3 and Arg2 and stores it in Arg1
-2 - SUB <CONDITION> Arg1, Arg2, Arg3          - Subtracts the value of Arg3 from Arg2 and stores it in Arg1
-3 - MOV <CONDITION> Arg1, Arg2                - Moves the value of Arg2 to Arg1
-4 - CMP <CONDITION> Arg1, Arg2                - Compares Arg2 to Arg1
-5 - BRA <CONDITION> Arg1                      - Sets the program counter to Arg1
-6 - LDR <CONDITION> Arg1, [Arg2]              - Load the value at the memory address Arg2 into Arg1
-7 - STR <CONDITION> Arg1, [Arg2]              - Store the value of Arg1 into the memory address Arg2
-8 - OUT <CONDITION> Arg1                      - Outputs values (0 = memory).
+0. HLT <CONDITION>                           - Halts the program
+1. ADD <CONDITION> Arg1, Arg2, Arg3          - Adds the value of Arg3 and Arg2 and stores it in Arg1
+2. SUB <CONDITION> Arg1, Arg2, Arg3          - Subtracts the value of Arg3 from Arg2 and stores it in Arg1
+3. MOV <CONDITION> Arg1, Arg2                - Moves the value of Arg2 to Arg1
+4. CMP <CONDITION> Arg1, Arg2                - Compares Arg2 to Arg1
+5. BRA <CONDITION> Arg1                      - Sets the program counter to Arg1
+6. LDR <CONDITION> Arg1, [Arg2]              - Load the value at the memory address Arg2 into Arg1
+7. STR <CONDITION> Arg1, [Arg2]              - Store the value of Arg1 into the memory address Arg2
+8. OUT <CONDITION> Arg1                      - Outputs values (0 = memory).
 
 ### Conditions
 
-EQ - Equal
-NE - Not equal
-GE - Greater or equal
-GT - Greater than
-LE - Less or equal
-LT - Less than
+1. EQ - Equal
+2. NE - Not equal
+3. GE - Greater or equal
+4. GT - Greater than
+5. LE - Less or equal
+6. LT - Less than
 
 ### Labels
 
@@ -44,7 +44,7 @@ Comments are specified with a number sign, '#', at the start of the line.
 
 
 
-## THE SETTINGS FILE
+## The settings file
  
 The settings file defines behaviours of the assembler.
 
