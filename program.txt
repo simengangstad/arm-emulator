@@ -1,4 +1,4 @@
-MOV R7, #6
-STR R7, [R8]
-LDR R6, [R8]
+# Write code here
+ 
+# MOV R1, #1 for example
 HLT

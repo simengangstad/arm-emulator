@@ -2,10 +2,35 @@
 output = "";
 
 def log(message):
-
+    
     logWithOptionOfBreaking(message, True);
 
 def logWithOptionOfBreaking(message, breakLine):
+
+    global output
+
+    if (breakLine):
+
+        if (debug):
+
+            print(message);
+
+        output += message + "\n";
+
+    else:
+
+        if (debug):
+
+            print(message, end="");
+
+        output += message;
+
+def logForced(message):
+
+    logForcedWithOptionOfBreaking(message, True);
+
+
+def logForcedWithOptionOfBreaking(message, breakLine):
 
     global output
 
@@ -21,32 +46,6 @@ def logWithOptionOfBreaking(message, breakLine):
 
         output += message;
 
-# Specification
-#
-# In every instruction except the HLT instruction a condition can be added. This condition has to be
-# fulfilled in order for the instruction to execute.
-#
-# 0 - HLT                                       - Halts the program
-# 1 - ADD <CONDITION> Arg1, Arg2, Arg3          - Adds the value of Arg3 and Arg2 and stores it in Arg1
-# 2 - SUB <CONDITION> Arg1, Arg2, Arg3          - Subtracts the value of Arg3 from Arg2 and stores it in Arg1
-# 3 - MOV <CONDITION> Arg1, Arg2                - Moves the value of Arg2 to Arg1
-# 4 - CMP <CONDITION> Arg1, Arg2                - Compares Arg2 to Arg1
-# 5 - BRA <CONDITION> Arg1                      - Sets the program counter to Arg1
-# 6 - LDR <CONDITION> Arg1, [Arg2]              - Load the value at the memory address Arg2 into Arg1
-# 7 - STR <CONDITION> Arg1, [Arg2]              - Store the value of Arg1 into the memory address Arg2
-#
-#
-# Labels
-#
-# Labels are defined by : and the label name. An example would be :end for the label end. This
-# points to the line after the label.
-#
-#
-# Memory
-#
-# Given [address] refers to the value at the given memory address.
-
-
 Specification = [
 
     "HLT",
@@ -56,7 +55,8 @@ Specification = [
     "CMP",
     "B",
     "LDR",
-    "STR"
+    "STR",
+    "OUT"
 ];
 
 Conditions = [
@@ -141,8 +141,6 @@ def isValidMemoryAddress(value):
 
         address = value[1:-1];
 
-        print(address);
-
         return isValidRegister(address);
 
     return False;
@@ -186,17 +184,18 @@ def retrieveValue(argument):
 
 def printError(message, pc):
 
-    log("Error at PC: " + str(pc) + " - " + message);
+    logForced("Error at PC: " + str(pc) + " - " + message);
 
     status = False;
 
-    log("CPU crashed!");
+    logForced("CPU crashed!");
 
 # ---------- START OF MAIN PROGRAM -------------
 
 # Reading program from file input
 
 settingsFile = None;
+debug = True;
 
 try:
 
@@ -208,8 +207,10 @@ except FileNotFoundError:
 
     settingsFile = open("settings.txt", "w+");
 
-    settingsFile.write("displayLabels=true");
-    settingsFile.write("displayMemory=true");
+    settingsFile.write("debug=true\n");
+    settingsFile.write("displayLabels=true\n");
+    settingsFile.write("displayMemory=true\n");
+    settingsFile.write("waitAfterExecution=true");
 
     settingsFile.seek(0);
 
@@ -231,8 +232,10 @@ for line in settingsList:
 
 settingsFile.close();
 
+debug = "debug" in settings and settings["debug"] == "true";
 displayLabels = "displayLabels" in settings and settings["displayLabels"] == "true";
 displayMemory = "displayMemory" in settings and settings["displayMemory"] == "true";
+waitAfterExecution = "waitAfterExecution" in settings and settings["waitAfterExecution"] == "true";
 
 file = None;
 
@@ -305,9 +308,15 @@ cycle = 1;
 
 while (status):
 
-    log("\n\n")
-
     # DISPLAY LABELS
+
+    if (program[pc].strip() == "" or program[pc].startswith("#")):
+
+        pc += 1;
+
+        continue;
+
+    log("\n\n")
 
     if (displayLabels):
 
@@ -318,20 +327,6 @@ while (status):
             log(str(labels[label]) + ": " + label);
 
         log("\n");
-
-
-    if (displayMemory):
-
-        log("----- MEMORY ------");
-
-        for y in range(0, int(AmountOfMemoryLocations / 4), 1):
-
-            for x in range(y, y + int(AmountOfMemoryLocations), int(AmountOfMemoryLocations / 4)):
-
-                logWithOptionOfBreaking(str(x) + ":" + str(memory[x]) + "\t", False);
-
-            log("\n")
-
 
     # FETCH
 
@@ -579,12 +574,49 @@ while (status):
 
         status = False;
 
+    elif (instruction == "OUT"):
+
+        validateArgumentsLength(arguments, 1);
+
+        try:
+
+            value = int(arguments[0]);
+
+            if (value == 0):
+
+                logForced("\n----- MEMORY ------");
+
+                for y in range(0, int(AmountOfMemoryLocations / 4), 1):
+
+                    for x in range(y, y + int(AmountOfMemoryLocations), int(AmountOfMemoryLocations / 4)):
+
+                        logForcedWithOptionOfBreaking(str(x) + ":" + str(memory[x]) + "\t", False);
+
+                    logForced("\n")
+                
+        except ValueError:
+
+            printError("Invalid argument, not an integer type.");
+        
 
     log("\n----- EXECUTE (Cycle " + str(cycle) + ") -----");
     printStatusOfAssembler();
 
     cycle += 1;
 
-    input();
+    if (displayMemory):
 
-print(output);
+        log("\n----- MEMORY ------");
+
+        for y in range(0, int(AmountOfMemoryLocations / 4), 1):
+
+            for x in range(y, y + int(AmountOfMemoryLocations), int(AmountOfMemoryLocations / 4)):
+
+                logWithOptionOfBreaking(str(x) + ":" + str(memory[x]) + "\t", False);
+
+            log("\n")
+
+    if (waitAfterExecution):
+
+        input();
+

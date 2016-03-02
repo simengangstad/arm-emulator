@@ -1,0 +1,9 @@
+MOV R7, #30
+
+: LOOP
+	ADD R1, R1, #1
+	
+	STR R1, [R1]
+	CMP R1, R7
+	BGE LOOP
+HLT

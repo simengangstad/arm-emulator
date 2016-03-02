@@ -1,2 +1,4 @@
+debug=true
 displayLabels=true
 displayMemory=true
+waitAfterExecution=true
