@@ -1,6 +1,6 @@
 # ARM assembler written in pyhton
 
-SPECIFICATION
+## SPECIFICATION
 
 8 registers (Rn). 
 32 words of RAM.
@@ -8,7 +8,7 @@ SPECIFICATION
 For every instruction issued a condition can be added. This condition has to be
 fulfilled in order for the instruction to execute.
 
-Instructions
+### Instructions
 
 0 - HLT <CONDITION>                           - Halts the program
 1 - ADD <CONDITION> Arg1, Arg2, Arg3          - Adds the value of Arg3 and Arg2 and stores it in Arg1
@@ -20,7 +20,7 @@ Instructions
 7 - STR <CONDITION> Arg1, [Arg2]              - Store the value of Arg1 into the memory address Arg2
 8 - OUT <CONDITION> Arg1                      - Outputs values (0 = memory).
 
-Conditions
+### Conditions
 
 EQ - Equal
 NE - Not equal
@@ -29,22 +29,22 @@ GT - Greater than
 LE - Less or equal
 LT - Less than
 
-Labels
+### Labels
 
 Labels are defined by : and the label name. An example would be :end for the label "end". This
 is a reference to the line after the label.
 
-Memory
+### Memory
 
 [address] refers to the value at the given memory address.
 
-Comments
+### Comments
 
 Comments are specified with a number sign, '#', at the start of the line.
 
 
 
-THE SETTINGS FILE
+## THE SETTINGS FILE
  
 The settings file defines behaviours of the assembler.
 
