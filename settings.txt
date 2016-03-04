@@ -1,4 +1,5 @@
-debug=true
+debug=false
 displayLabels=true
 displayMemory=true
-waitAfterExecution=true
+waitAfterExecution=false
+amountOfWords=32

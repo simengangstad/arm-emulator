@@ -3,7 +3,7 @@
 ## Specification
 
 8 registers (Rn). 
-32 words of RAM.
+The amount of words of RAM is specified in the settings file.
 
 For every instruction issued a condition can be added. This condition has to be
 fulfilled in order for the instruction to execute.

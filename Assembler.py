@@ -2,7 +2,7 @@
 output = "";
 
 def log(message):
-    
+
     logWithOptionOfBreaking(message, True);
 
 def logWithOptionOfBreaking(message, breakLine):
@@ -72,6 +72,7 @@ Conditions = [
 # Registers and statuses
 Registers = [
 
+    "R0",
     "R1",
     "R2",
     "R3",
@@ -81,20 +82,13 @@ Registers = [
     "R7"
 ];
 
-AmountOfRegisters = 7;
+AmountOfRegisters = 8;
 
-registers = [0 for i in range(7)];
+registers = [0 for i in range(AmountOfRegisters)];
 pc = 0;
 cir = "";
 statusNegative = False;
 statusZero = False;
-
-
-# Memory
-
-AmountOfMemoryLocations = 32;
-memory = [0]*AmountOfMemoryLocations;
-
 
 # Helper functions
 
@@ -190,6 +184,51 @@ def printError(message, pc):
 
     logForced("CPU crashed!");
 
+def writeMemoryToFile(fileHandle):
+
+    log("Writing memory to file: " + fileHandle.name)
+
+    fileHandle.truncate(0);
+
+    for i in range(0, len(memory)):
+
+        fileHandle.write(i + ": " + memory[i]);
+
+def retrieveMemoryFromFile(fileHandle):
+
+    logForced("Retrieving memory from file: " + fileHandle.name);
+
+    global memory;
+
+    memory = [0]*AmountOfMemoryLocations;
+
+    lines = fileHandle.read().split("\n");
+
+    index = 0;
+
+    for line in lines:
+
+        if (index >= AmountOfMemoryLocations):
+
+            break;
+
+        try:
+
+            position = int(line.split("=")[0].strip());
+            value = int(line.split("=")[1].strip());
+
+            memory[position] = value;
+
+        except ValueError:
+
+            logForced("Error whilst reading memory from file at the given line: " + (line));
+
+            return False;
+
+        index += 1;
+
+    return True;
+
 # ---------- START OF MAIN PROGRAM -------------
 
 # Reading program from file input
@@ -236,6 +275,50 @@ debug = "debug" in settings and settings["debug"] == "true";
 displayLabels = "displayLabels" in settings and settings["displayLabels"] == "true";
 displayMemory = "displayMemory" in settings and settings["displayMemory"] == "true";
 waitAfterExecution = "waitAfterExecution" in settings and settings["waitAfterExecution"] == "true";
+amountOfWords = 32;
+
+if ("amountOfWords" in settings):
+
+    try:
+
+        amountOfWords = int(settings["amountOfWords"]);
+
+    except ValueError:
+
+        logForced("Invalid field of amount of words in settings... Setting to default value of 32.");
+
+        amountOfWords = 32;
+
+
+# Memory and fetching memory file
+
+
+AmountOfMemoryLocations = amountOfWords;
+memory = [0]*AmountOfMemoryLocations;
+
+memoryFile = None;
+
+try:
+
+    memoryFile = open("memory.txt");
+
+    if (not retrieveMemoryFromFile(memoryFile)):
+
+        logForced("Failed to load memory from file... Filling memory with default data.");
+
+        memory = [0]*AmountOfMemoryLocations;
+
+except FileNotFoundError:
+
+    log("Memory file not found, creating...");
+
+    memoryFile = open("memory.txt", "w+");
+
+    writeMemoryToFile(memoryFile);
+
+
+# Fetching program file
+
 
 file = None;
 
@@ -245,7 +328,7 @@ while (fileNotFound):
 
     try:
 
-        file = open(input("File to assemble and run: "), "r");
+        file = open(input("\nFile to assemble and run: "), "r");
 
         fileNotFound = False;
 
@@ -293,7 +376,6 @@ for index in range(len(program)):
     log(str(index) + ". " + line);
 
 log("\n\n");
-
 
 
 # Interpreting and executing
@@ -593,11 +675,11 @@ while (status):
                         logForcedWithOptionOfBreaking(str(x) + ":" + str(memory[x]) + "\t", False);
 
                     logForced("\n")
-                
+
         except ValueError:
 
             printError("Invalid argument, not an integer type.");
-        
+
 
     log("\n----- EXECUTE (Cycle " + str(cycle) + ") -----");
     printStatusOfAssembler();
@@ -620,3 +702,4 @@ while (status):
 
         input();
 
+memoryFile.close();
