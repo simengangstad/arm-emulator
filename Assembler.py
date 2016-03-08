@@ -94,12 +94,11 @@ statusZero = False;
 
 def printStatusOfAssembler():
 
-    log("PC:" + str(pc));
-    log("CIR:" + cir);
+    log("PC: " + str(pc));
+    log("CIR: " + cir);
 
-    log("\nStatus negative:" + str(statusNegative));
-    log("Status zero:" + str(statusZero));
-    log("Status:" + str(status) + "\n");
+    log("\nStatus negative: " + str(statusNegative));
+    log("Status zero: " + str(statusZero));
 
     for i in range(len(registers)):
 
@@ -196,7 +195,7 @@ def writeMemoryToFile(fileHandle):
 
 def retrieveMemoryFromFile(fileHandle):
 
-    logForced("Retrieving memory from file: " + fileHandle.name);
+    logForced("Retrieving memory from file: " + fileHandle.name + ", amount of memory locations: " + str(AmountOfMemoryLocations));
 
     global memory;
 
@@ -207,7 +206,7 @@ def retrieveMemoryFromFile(fileHandle):
     index = 0;
 
     for line in lines:
-
+        
         if (index >= AmountOfMemoryLocations):
 
             break;
@@ -390,6 +389,12 @@ cycle = 1;
 
 while (status):
 
+    if (pc < 0 or len(program) <= pc):
+
+        printError("PC is out of boundry for memory", pc);
+
+        break;
+
     # DISPLAY LABELS
 
     if (program[pc].strip() == "" or program[pc].startswith("#")):
@@ -413,12 +418,6 @@ while (status):
     # FETCH
 
     # Fetch line and trim string
-    if (pc < 0 or len(program) <= pc):
-
-        printError("PC is out of boundry for memory", pc);
-
-        break;
-
     cir = program[pc];
 
     if (cir.startswith(":")):
@@ -494,7 +493,7 @@ while (status):
 
             continue;
 
-        elif (condition == "GT" and statusNegative):
+        elif (condition == "GT" and (statusZero or statusNegative)):
 
             continue;
 
@@ -502,7 +501,7 @@ while (status):
 
             continue;
 
-        elif (condition == "LT" and not statusNegative):
+        elif (condition == "LT" and (statusZero or not statusNegative)):
 
             continue;
 
@@ -601,7 +600,7 @@ while (status):
 
         else:
 
-            statusNegative = value2 < value1;
+            statusNegative = value1 - value2 < 0;
             statusZero = value1 == value2;
 
     elif (instruction == "B"):

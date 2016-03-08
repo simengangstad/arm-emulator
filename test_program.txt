@@ -1,15 +1,4 @@
-MOV R7, #31
-
-: LOOP
-	LDR R2, [R1]
-	ADD R2, R2, R1
-	STR R2, [R1]
-
-	ADD R1, R1, #1
-	CMP R1, R7
-
-	BGE LOOP
-
-OUT 0
-
+MOV R7, #30
+CMP R7, #31
+MOVLT R0, #1
 HLT

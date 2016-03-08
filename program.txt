@@ -1,4 +1,17 @@
 # Write code here
  
-# MOV R1, #1 for example
+
+
+MOV R1, #3
+MOV R3, #4
+LDR R2, [R1]
+MOV R0, #14
+: AGAIN ADD R0, R0, R2
+	SUB R1, R1, #1
+	CMP R1, #0
+	BGT AGAIN
+STR R0, [R3]
+
+
+
 HLT

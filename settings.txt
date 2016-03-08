@@ -1,5 +1,9 @@
 debug=true
+
 displayLabels=true
+
 displayMemory=true
+
 waitAfterExecution=true
+
 amountOfWords=32
