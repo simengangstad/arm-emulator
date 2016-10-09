@@ -1,4 +1,4 @@
-# ARM emulator written in Python
+# ARM emulator written in Python 3.x
 
 ## Specification
 
@@ -22,6 +22,8 @@ fulfilled in order for the instruction to execute.
 
 ### Conditions
 
+Conditions follow the instruction (such as MOVEQ). If the condition is true, which is determined by the result of the CMP instruction, the instruction will be executed.
+
 1. EQ - Equal
 2. NE - Not equal
 3. GE - Greater or equal
@@ -31,8 +33,7 @@ fulfilled in order for the instruction to execute.
 
 ### Labels
 
-Labels are defined by : and the label name. An example would be :end for the label "end". This
-is a reference to the line after the label.
+Labels are defined by : and the label name. An example would be :end for the label "end". This is a reference to the line after the label.
 
 ### Memory
 

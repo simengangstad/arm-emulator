@@ -1,0 +1,12 @@
+# Multiplies 3 with 4
+
+MOV R1, #3
+MOV R2, #4
+
+
+MOV R0, R2
+: AGAIN ADD R3, R3, R1
+	SUB R0, R0, #1
+	CMP R0, #0
+	BGT AGAIN
+HLT

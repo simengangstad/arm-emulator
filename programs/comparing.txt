@@ -1,0 +1,8 @@
+# Simple compare program where R0 is filled with 1 if R1 is less than R2
+
+MOV R1, #30
+MOV R2, #31
+
+CMP R1, R2
+MOVLT R0, #1
+HLT

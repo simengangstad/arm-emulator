@@ -1,4 +1,0 @@
-MOV R7, #30
-CMP R7, #31
-MOVLT R0, #1
-HLT
