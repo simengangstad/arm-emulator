@@ -1,4 +1,4 @@
-# ARM assembler written in pyhton
+# ARM assembler written in Python
 
 ## Specification
 
@@ -48,8 +48,8 @@ Comments are specified with a number sign, '#', at the start of the line.
  
 The settings file defines behaviours of the assembler.
 
-debug - If logging should be enabled (error messages is shown either way)
-displayLabels - If the labels should be displayed every fetch cycle
-displayMemory - If the memory should be displayed every execution cycle
-waitAfterExecution - If the assembler should wait after each execution cycle
-amountOfWords - Specifies the amount of words for memory
+* debug - If logging should be enabled (error messages is shown either way)
+* displayLabels - If the labels should be displayed every fetch cycle
+* displayMemory - If the memory should be displayed every execution cycle
+* waitAfterExecution - If the assembler should wait after each execution cycle
+* amountOfWords - Specifies the amount of words for memory
