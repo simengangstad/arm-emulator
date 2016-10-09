@@ -54,3 +54,11 @@ The settings file defines behaviours of the assembler.
 * displayMemory - If the memory should be displayed every execution cycle
 * waitAfterExecution - If the assembler should wait after each execution cycle
 * amountOfWords - Specifies the amount of words for memory
+
+
+## Use
+
+1. `python3 emulator.py` in command line, or run it in your favourite editor.
+2. Specify where the program you want to run is located.
+3. Press enter to step through your program.
+
