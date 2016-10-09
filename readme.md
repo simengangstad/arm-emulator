@@ -1,4 +1,4 @@
-# ARM assembler written in Python
+# ARM emulator written in Python
 
 ## Specification
 
